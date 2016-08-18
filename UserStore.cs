@@ -15,7 +15,7 @@ namespace MongoDB.AspNet.Identity
     ///     Class UserStore.
     /// </summary>
     /// <typeparam name="TUser">The type of the t user.</typeparam>
-    public class UserStore<TUser> : IUserLoginStore<TUser>, IUserClaimStore<TUser>, IUserRoleStore<TUser>,
+    public class UserStore<TUser> : IUserStore<TUser>, IUserLoginStore<TUser>, IUserClaimStore<TUser>, IUserRoleStore<TUser>,
         IUserPasswordStore<TUser>, IUserSecurityStampStore<TUser>
         where TUser : IdentityUser
     {
@@ -35,24 +35,7 @@ namespace MongoDB.AspNet.Identity
         /// The AspNetUsers collection name
         /// </summary>
         private const string collectionName = "AspNetUsers";
-
-        /// <summary>
-        ///     Gets the database from connection string.
-        /// </summary>
-        /// <param name="connectionString">The connection string.</param>
-        /// <returns>MongoDatabase.</returns>
-        /// <exception cref="System.Exception">No database name specified in connection string</exception>
-        private MongoDatabase GetDatabaseFromSqlStyle(string connectionString)
-        {
-            var conString = new MongoConnectionStringBuilder(connectionString);
-            MongoClientSettings settings = MongoClientSettings.FromConnectionStringBuilder(conString);
-            MongoServer server = new MongoClient(settings).GetServer();
-            if (conString.DatabaseName == null)
-            {
-                throw new Exception("No database name specified in connection string");
-            }
-            return server.GetDatabase(conString.DatabaseName);
-        }
+        
 
         /// <summary>
         ///     Gets the database from URL.
@@ -116,7 +99,7 @@ namespace MongoDB.AspNet.Identity
                 }
                 else
                 {
-                    db = GetDatabaseFromSqlStyle(connStringFromManager);
+                    throw new Exception("Connection string must be specified as a MongoDB connection URI");
                 }
             }
         }
@@ -166,7 +149,7 @@ namespace MongoDB.AspNet.Identity
             }
             else
             {
-                db = GetDatabaseFromSqlStyle(connectionString);
+                throw new Exception("Only MongoDB Connection URI format strings are allowed");
             }
         }
 
